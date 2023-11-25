@@ -1,5 +1,7 @@
 import sqlite3 as sq
 
+# создание базы данных юзеров
+
 
 async def DataBase_start():
     global db, cur
@@ -12,12 +14,16 @@ async def DataBase_start():
     db.commit()
     print("db commit")
 
+# удаление профиля
+
 
 async def delete_profile(user_id):
     cur.execute(
         "DELETE FROM profile WHERE user_id == '{key}' ".format(key=user_id))
     db.commit()
     print("profile was deleted")
+
+# создание профиля
 
 
 async def create_profile(user_id):
@@ -39,6 +45,10 @@ async def create_profile(user_id):
         print("u have created profile")
         WasCreated = True
     return WasCreated
+
+# почти создание
+# прошлая функция срабатывает при старте боты, чтобы отслеживать создан ли профиль. Если он не создан она создает.
+# эта функция добавляет в него все параметры
 
 
 async def edit_profile(state, user_id):

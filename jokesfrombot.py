@@ -10,25 +10,6 @@ url = 'https://www.anekdot.ru/random/anekdot/'
 anectodes = []
 
 
-def DataBase_Jokes():
-    global db, cur
-
-    db = sq.connect('JokesFromBot.db')
-    cur = db.cursor()
-
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS Jokes(id TEXT PRIMARY KEY, anec TEXT, likes TEXT, dislikes TEXT)")
-
-    db.commit()
-
-
-def add_joke(id, joke):
-    cur.execute("INSERT INTO Jokes VALUES(?, ?, ?, ?)",
-                (id, joke, 0, 0))
-
-    db.commit()
-
-
 async def get_joke():
 
     db1 = sq.connect('JokesFromBot.db')
@@ -43,6 +24,32 @@ async def get_joke():
     return (str(joooke), ran, Likes, Dislikes)
 
 
+# создание базы данных шуток от бота
+def DataBase_Jokes():
+    global db, cur
+
+    db = sq.connect('JokesFromBot.db')
+    cur = db.cursor()
+
+    cur.execute(
+        "CREATE TABLE IF NOT EXISTS Jokes(id TEXT PRIMARY KEY, anec TEXT, likes TEXT, dislikes TEXT)")
+
+    db.commit()
+
+# все то что ниже это добавление шуток
+# то есть это инструмент который с сайта анекдотов берет анекдоты и записывает их в базу данных
+# если открыть ссылку, то появляется несколько рандомных анекдотов, так бот и делает
+
+
+def add_joke(id, joke):
+    cur.execute("INSERT INTO Jokes VALUES(?, ?, ?, ?)",
+                (id, joke, 0, 0))
+
+    db.commit()
+
+# это парсер, который со страницы копирует анекдоты
+
+
 def parser(url, anec):
     req = requests.get(url)
 
@@ -51,11 +58,16 @@ def parser(url, anec):
     for t in anectemp:
         anec.append(t.text)
 
+# тут он все анекдоты записывает в лист
+# но это не обязательно, можно записывать в лист только партию анекдотов, а потом их в бд копировать и по новой.
+
 
 def ParsAll(url):
     global anectodes
     for i in range(50):
         parser(url, anectodes)
+
+# чтобы все записать в бд
 
 
 def start_pars():

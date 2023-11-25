@@ -12,6 +12,7 @@ def KB_default():
     # kb.add(KeyboardButton('/clear'))
     kb.add(KeyboardButton('/usersJoke'))
     kb.insert(KeyboardButton('/addJoke'))
+    kb.add(KeyboardButton('/deleteJokes'))
 
     return kb
 

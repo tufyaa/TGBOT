@@ -13,6 +13,8 @@ API = '6816973281:AAHfQuHR8M5iYjAwiLD2fpnRAUVQzf79_vA'
 WasCreated = False
 User_joke = True
 
+# задает функции которые выполняются при старте
+
 
 async def on_start(_):
     await DataBase_start()
@@ -21,6 +23,8 @@ async def on_start(_):
 storage = MemoryStorage()
 bot = Bot(API)
 dp = Dispatcher(bot=bot, storage=storage)
+
+# обновление лайков в бд
 
 
 def update_vote(Likes, Dislikes, idd):
@@ -34,6 +38,8 @@ def update_vote(Likes, Dislikes, idd):
         Likes, Dislikes, idd))
     dbb.commit()
 
+# для создания профиля
+
 
 class ProfileState(StatesGroup):
     delete = State()
@@ -42,10 +48,14 @@ class ProfileState(StatesGroup):
     age = State()
     description = State()
 
+# для добавления добавления и удаления шуток
+
 
 class JokeState(StatesGroup):
     add = State()
     delAll = State()
+
+# команда старта бота
 
 
 @dp.message_handler(commands=['start'])
@@ -54,6 +64,8 @@ async def Start(message: types.Message) -> None:
     WasCreated = await create_profile(message.from_user.id)
     await bot.send_sticker(message.from_user.id, sticker="CAACAgIAAxkBAAJYiGVTSHB-SuhptBTryUYnCpC1FiWjAAKmGAACbjORSfydxNIpDtJoMwQ", reply_markup=KB_default())
     await message.delete()
+
+# показывает все команды
 
 
 @dp.message_handler(commands=['help'])
@@ -68,6 +80,8 @@ async def Help(message: types.Message) -> None:
 '''
     await bot.send_message(message.from_user.id, message_help, reply_markup=KB_default())
 
+# создание профиля
+
 
 @dp.message_handler(commands=['create'])
 async def Create_profile(message: types.Message) -> None:
@@ -78,11 +92,15 @@ async def Create_profile(message: types.Message) -> None:
     else:
         await message.reply("U have created profile.")
 
+# отмена какой-либо операции
+
 
 @dp.message_handler(commands=['cancel'], state='*')
 async def Cancel(message: types.Message, state: FSMContext) -> None:
     await state.finish()
     await message.reply('You canceled your operation', reply_markup=KB_default())
+
+# удаление профиля
 
 
 @dp.message_handler(commands=['delete'])
@@ -93,6 +111,8 @@ async def Del_profile(message: types.Message) -> None:
         await ProfileState.delete.set()
     else:
         await message.reply("You dont have profile")
+
+# продтверждение удаления
 
 
 @dp.message_handler(state=ProfileState.delete)
@@ -108,10 +128,14 @@ async def CheckerDel(message: types.Message, state: FSMContext):
         await message.reply("Ok, your profile not delete")
         await state.finish()
 
+# проверка на то, что боту отправили фото
+
 
 @dp.message_handler(lambda message: not message.photo, state=ProfileState.photo)
 async def CheckerPhoto(message: types.Message):
     await message.reply('This is not photo, try again')
+
+# добавление фото для профиля
 
 
 @dp.message_handler(content_types=['photo'], state=ProfileState.photo)
@@ -122,10 +146,14 @@ async def SetPhoto(message: types.Message, state: FSMContext) -> None:
     await message.reply("Now, send me your name.")
     await ProfileState.next()
 
+# проверка на текст
+
 
 @dp.message_handler(lambda message: not message.text, state=ProfileState.name)
 async def CheckerText(message: types.Message):
     await message.reply('This is not text, try again')
+
+# добавление имени к профилю
 
 
 @dp.message_handler(state=ProfileState.name)
@@ -136,10 +164,14 @@ async def SetName(message: types.Message, state: FSMContext) -> None:
     await message.reply("How old are you?")
     await ProfileState.next()
 
+# проверка на число
+
 
 @dp.message_handler(lambda message: not message.text.isdigit(), state=ProfileState.age)
 async def CheckerPhoto(message: types.Message):
     await message.reply('This is not age, try again')
+
+# добавление возраста
 
 
 @dp.message_handler(state=ProfileState.age)
@@ -150,10 +182,14 @@ async def SetAge(message: types.Message, state: FSMContext) -> None:
     await message.reply("Tell something about yourself.")
     await ProfileState.next()
 
+# проверка на текст
+
 
 @dp.message_handler(lambda message: not message.text, state=ProfileState.description)
 async def CheckerTextDesc(message: types.Message):
     await message.reply('This is not text, try again')
+
+# добавление описания к профилю
 
 
 @dp.message_handler(state=ProfileState.description)
@@ -171,7 +207,7 @@ async def SetDescription(message: types.Message, state: FSMContext) -> None:
 #     await state.finish()
 #     await message.reply('You canceled your operation', reply_markup=KB_default())
 
-
+# добавление шутки
 @dp.message_handler(commands=['addJoke'])
 async def AddUsersJoke(message: types.Message) -> None:
     global WasCreated
@@ -182,10 +218,14 @@ async def AddUsersJoke(message: types.Message) -> None:
         await message.reply("Write a joke here", reply_markup=KB_cancel())
         await JokeState.add.set()
 
+# проверка на текст
+
 
 @dp.message_handler(lambda message: not message.text, state=JokeState.add)
 async def CheckerTextJoke(message: types.Message):
     await message.reply('This is not text, try again')
+
+# добавление
 
 
 @dp.message_handler(content_types=['text'], state=JokeState.add)
@@ -194,11 +234,15 @@ async def AddUsersJoke(message: types.Message, state: FSMContext) -> None:
     await message.reply('You have added the joke', reply_markup=KB_default())
     await state.finish()
 
+# подтверждение удаления шуток
+
 
 @dp.message_handler(commands=['deleteJokes'])
 async def DelJokes(message: types.Message) -> None:
     await message.reply("Are u sure that u want to delete your jokes?\n Say 'YES', if u wanna delete your jokes.")
     await JokeState.delAll.set()
+
+# удаление шуток
 
 
 @dp.message_handler(state=JokeState.delAll)
@@ -221,7 +265,7 @@ async def CheckerDelJokes(message: types.Message, state: FSMContext):
 #             print('no')
 #     await message.delete()
 
-
+# получение шуток от бота
 @dp.message_handler(commands=['joke'])
 async def Joke(message: types.Message):
     global User_joke
@@ -233,6 +277,8 @@ async def Joke(message: types.Message):
     await bot.send_message(chat_id=message.from_user.id, text=f'{anecdot}', reply_markup=IKB())
     print('nooo1')
     await message.delete()
+
+# получение шуток от юзеров
 
 
 @dp.message_handler(commands=['usersJoke'])
@@ -247,10 +293,14 @@ async def JokeFromUser(message: types.Message):
     print('nooo2')
     await message.delete()
 
+# проверка на оценку шутки
+
 
 @dp.callback_query_handler(text="voted")
 async def vote_callback(call: types.CallbackQuery):
     await call.answer('You have voted')
+
+# оценка шутки
 
 
 @dp.callback_query_handler()
@@ -268,11 +318,13 @@ async def vote_callback(call: types.CallbackQuery):
         await bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=IKB_dislike(Likes, Dislikes))
         update_vote(Likes, Dislikes, id_jokee)
 
+# если пользователь не хочет шуток)
+
 
 @dp.message_handler()
 async def RandomWord(message: types.Message):
     await message.answer(message.text + '🤡')
 
-
+# старт мейна
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True, on_startup=on_start)

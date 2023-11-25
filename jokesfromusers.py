@@ -1,6 +1,8 @@
 import sqlite3 as sq
 import random
 
+# создание базы данных шуток от юзеров
+
 
 async def DataBase_User_Jokes():
     global db, cur
@@ -12,6 +14,8 @@ async def DataBase_User_Jokes():
         "CREATE TABLE IF NOT EXISTS Jokes(id TEXT PRIMARY KEY, user_id TEXT, anec TEXT, likes TEXT, dislikes TEXT)")
 
     db.commit()
+
+# добавление шуток
 
 
 async def add_user_joke(user_id, joke):
@@ -27,12 +31,16 @@ async def add_user_joke(user_id, joke):
     db.commit()
     print("add Ujoke commit")
 
+# удаление шуток
+
 
 async def delAllJokes(user_id):
     cur.execute(
         "DELETE FROM Jokes WHERE user_id == '{key}' ".format(key=user_id))
     db.commit()
     print("profile was deleted")
+
+# получение рандомной шутки
 
 
 async def get_joke_from_user():

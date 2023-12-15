@@ -8,8 +8,9 @@ from aiogram.dispatcher import FSMContext
 import sqlite3 as sq
 from jokesfromusers import DataBase_User_Jokes, add_user_joke, delAllJokes, get_joke_from_user
 from jokesfrombot import get_joke
+from api import api
 
-API = '6816973281:AAHfQuHR8M5iYjAwiLD2fpnRAUVQzf79_vA'
+API = api
 WasCreated = False
 User_joke = True
 
